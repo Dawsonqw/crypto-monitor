@@ -14,7 +14,7 @@ from loguru import logger
 from config import LogSettings
 
 
-def setup_logging(log_settings: LogSettings | None = None) -> None:
+def setup_logger(log_settings: LogSettings | None = None) -> None:
     """Configure loguru sinks based on LogSettings.
 
     Parameters
@@ -29,12 +29,12 @@ def setup_logging(log_settings: LogSettings | None = None) -> None:
     logger.remove()
 
     # ── File sink (rotation by size) ──────────────────────────────────────
-    log_path = Path(log_settings.log_file)
+    log_path = Path(log_settings.file)
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     logger.add(
         str(log_path),
-        rotation=log_settings.log_max_bytes,
+        rotation=log_settings.max_bytes,
         retention="7 days",
         encoding="utf-8",
         enqueue=True,           # thread-safe
@@ -47,7 +47,7 @@ def setup_logging(log_settings: LogSettings | None = None) -> None:
     )
 
     # ── Stdout sink (optional) ────────────────────────────────────────────
-    if log_settings.log_to_stdout:
+    if log_settings.to_stdout:
         logger.add(
             sys.stdout,
             level="DEBUG",
@@ -60,4 +60,4 @@ def setup_logging(log_settings: LogSettings | None = None) -> None:
             ),
         )
 
-    logger.info("Logging initialised  file={}", log_settings.log_file)
+    logger.info("Logging initialised  file={}", log_settings.file)
